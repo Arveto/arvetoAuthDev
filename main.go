@@ -44,13 +44,33 @@ func main() {
 	})
 	http.HandleFunc("/publickey", provider.PubHTTP)
 	http.HandleFunc("/redirect", redirect)
+	http.HandleFunc("/generate", generate)
 
 	log.Println("[LISTEN]", *a, "for the server", serverURL)
 	log.Fatal(http.ListenAndServe(*a, nil))
 }
 
-// Get parmas from URL Query, generate a JWT a redirect the user to it.
+func generate(w http.ResponseWriter, r *http.Request) {
+	jwt := getJWT(w, r)
+	if jwt == "" {
+		return
+	}
+	w.Write([]byte(jwt))
+	w.Write([]byte("\r\n"))
+}
+
+// Get parmas from URL Query and generate a JWT and a redirect the user to it.
 func redirect(w http.ResponseWriter, r *http.Request) {
+	jwt := getJWT(w, r)
+	if jwt == "" {
+		return
+	}
+	url := strings.TrimSuffix(r.URL.Query().Get("u"), "/")
+	http.Redirect(w, r, url+"/login?jwt="+jwt+"&r="+r.URL.Query().Get("r"), http.StatusTemporaryRedirect)
+}
+
+// Get parmas from URL Query and generate a JWT.
+func getJWT(w http.ResponseWriter, r *http.Request) string {
 	get := r.URL.Query().Get
 
 	u := public.UserInfo{
@@ -61,28 +81,26 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 	}
 	if u.ID == "" || u.Pseudo == "" || u.Email == "" {
 		http.Error(w, "paras id, pseudo or email are empty", http.StatusBadRequest)
-		return
+		return ""
 	}
 	if err := u.Level.UnmarshalText([]byte(get("level"))); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return ""
 	}
 
 	app := get("app")
-	url := strings.TrimSuffix(get("u"), "/")
-
-	if url == "" || app == "" {
-		http.Error(w, "u or app are empty", http.StatusBadRequest)
-		return
+	if app == "" {
+		http.Error(w, "app are empty", http.StatusBadRequest)
+		return ""
 	}
 
 	jwt, err := provider.CreateJWT(&u, app)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return ""
 	}
 
-	log.Println("[JWT]", url, u.ID)
+	log.Println("[JWT]", app, u.ID)
 
-	http.Redirect(w, r, url+"/login?jwt="+jwt+"&r="+get("r"), http.StatusTemporaryRedirect)
+	return jwt
 }
