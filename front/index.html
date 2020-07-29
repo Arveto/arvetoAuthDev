@@ -11,28 +11,39 @@
 			utiliser uniquement pour le dévelopement&#8239;!</strong></p>
 
 	<input id=u type="url" value="http://localhost:9000"><br>
+	<input id=app type="text" value="sex"><br>
+	<input id=gen type="checkbox"><label for=gen>Generate (ou redirect)</label>
+	<br>
 	<script>
 		document.addEventListener("DOMContentLoaded", () => {
-			const u = document.getElementById('u');
-			const f = () => document.querySelectorAll('#list a')
-				.forEach(a => {
-					let href = new URL(a.href);
-					href.searchParams.set('u', u.value);
-					a.href = href.toString();
-				});
-			u.addEventListener('input', f);
-			f();
-
 			const l = new URLSearchParams(document.location.search);
-			const app = l.get('app');
 			const r = l.get('r');
 			document.querySelectorAll('#list a')
 				.forEach(a => {
 					let href = new URL(a.href);
-					href.searchParams.set('app', app);
 					href.searchParams.set('r', r);
 					a.href = href.toString();
 				});
+
+			const u = document.getElementById('u');
+			const app = document.getElementById('app');
+			const gen = document.getElementById('gen');
+			app.value = l.get('app');
+
+			function update() {
+				document.querySelectorAll('#list a')
+					.forEach(a => {
+						let href = new URL(a.href);
+						href.pathname = gen.checked ? 'generate' : 'redirect';
+						href.searchParams.set('u', u.value);
+						href.searchParams.set('app', app.value);
+						a.href = href.toString();
+					});
+			}
+			u.addEventListener('input', update);
+			app.addEventListener('input', update);
+			gen.addEventListener('input', update);
+			update();
 		}, {
 			once: true,
 		});
@@ -52,7 +63,8 @@
 
 
 	<footer style="font-style: italic;">
-		<a href="https://github.com/Arveto/arvetoAuthDev">https://github.com/Arveto/arvetoAuthDev</a><br>
+		<a
+				href="https://github.com/Arveto/arvetoAuthDev">https://github.com/Arveto/arvetoAuthDev</a><br>
 		Copyright (c) 2020, Arveto Ink. All rights reserved.<br>
 		Use of this source code is governed by a BSD<br>
 		license that can be found in the LICENSE file.
