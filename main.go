@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 // from github.com/HuguesGuilleus/staticFile
-//go:generate staticFile front/avatar.webp front/index.html
+//go:generate staticFile front/avatar.webp front/r2d2.webp front/index.html
 
 package main
 
@@ -40,7 +40,11 @@ func main() {
 	http.HandleFunc("/avatar", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("[AVATAR]")
 		w.Header().Set("Content-Type", "image/webp")
-		w.Write(FrontAvatar())
+		if strings.Contains(r.URL.Query().Get("u"), "bot") {
+			w.Write(FrontR2d2())
+		} else {
+			w.Write(FrontAvatar())
+		}
 	})
 	http.HandleFunc("/publickey", provider.PubHTTP)
 	http.HandleFunc("/redirect", redirect)
