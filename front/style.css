@@ -45,8 +45,10 @@ a {
 	color: dodgerblue;
 }
 
-input:not([type=checkbox]) {
-	display: block;
+.inputGroup {
+	width: 100%;
+	display: grid;
+	grid-template-columns: auto 1fr;
 	width: 100%;
 	margin: var(--l2) 0;
 	border: var(--l1) var(--cline);
@@ -56,6 +58,23 @@ input:not([type=checkbox]) {
 	font-family: inherit;
 	color: inherit;
 	background-color: var(--bg-secondary);
+}
+.inputGroup+.inputGroup {
+	border-top: 0;
+}
+
+.inputGroup > label {
+	margin-right: var(--sp);
+	color: var(--cline);
+}
+
+input:not([type=checkbox]) {
+	margin: 0;
+	border: none;
+	padding: 0;
+	font: inherit;
+	color: inherit;
+	background: unset;
 }
 
 button {

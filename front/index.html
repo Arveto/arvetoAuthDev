@@ -13,14 +13,22 @@
 	<p>Ce site fournis des JWT de faux utilisateurs. <strong>À
 			utiliser uniquement pour le dévelopement&#8239;!</strong></p>
 
-	<input type=url id=u value="http://localhost:8000" placeholder="URL de l'application"><br>
-	<input type=text id=r placeholder="URL de redirection dans l'application"><br>
-	<input type=text id=app placeholder="ID de l'application"><br>
-	<input type=text id=teams placeholder="Équipes (ca, dev)"><br>
-	<hr>
-	<input type=checkbox id=gen><label for=gen>Bot</label><br>
-	<button type="button" id=go>GO!</button>
-	<hr>
+	<h2>Général</h2>
+	<form>
+		<div class="inputGroup">
+			<label for=u>URL de l'application</label><input type=url id=u value="http://localhost:8000">
+		</div>
+		<div class="inputGroup">
+			<label for=r>URL de redirection dans l'application</label><input type=text id=r>
+		</div>
+		<div class="inputGroup">
+			<label for=app>ID de l'application</label><input type=text id=app>
+		</div>
+		<div class="inputGroup">
+			<label for=teams>Équipes</label><input type=text id=teams placeholder="ca, dev, ...">
+		</div>
+	</form>
+
 
 	<ul id=list>
 		<li><button type=button class="inline" id=tomas>GENERATE</button><a id=tomas>Tomas (Visiteur)</a>
