@@ -47,8 +47,10 @@ a {
 
 .inputGroup {
 	width: 100%;
+	box-sizing: border-box;
 	display: grid;
 	grid-template-columns: auto 1fr;
+	grid-gap: var(--sp);
 	width: 100%;
 	margin: var(--l2) 0;
 	border: var(--l1) var(--cline);
@@ -64,17 +66,21 @@ a {
 }
 
 .inputGroup > label {
-	margin-right: var(--sp);
 	color: var(--cline);
 }
 
 input:not([type=checkbox]) {
 	margin: 0;
 	border: none;
+	border-bottom: var(--l2) solid var(--bg-secondary);
 	padding: 0;
 	font: inherit;
 	color: inherit;
 	background: unset;
+	outline: none;
+}
+input:hover {
+	color: var(--cline-focus);
 }
 
 button {
@@ -88,8 +94,7 @@ button {
 }
 
 button:hover,
-input:focus,
-input:hover {
+input:focus {
 	border-color: var(--cline-focus);
 	color: var(--cline-focus);
 	border-radius: 0;
