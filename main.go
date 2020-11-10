@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 // from github.com/HuguesGuilleus/staticFile
-//go:generate staticFile front/avatar.webp front/r2d2.webp front/index.html
+//go:generate staticFile front/avatar.webp front/index.html front/app.js front/r2d2.webp front/style.css
 
 package main
 
@@ -13,13 +13,14 @@ import (
 	"github.com/HuguesGuilleus/static.v3"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
 var provider *auth.Provider
 
 func main() {
-	a := flag.String("a", "localhost:8000", "The listen address.")
+	a := flag.String("a", "localhost:9000", "The listen address.")
 	k := flag.String("k", "key.pem", "The private key file")
 	flag.Parse()
 
@@ -29,7 +30,11 @@ func main() {
 		log.Fatal(err)
 	}
 
+	static.Dev = true
+
 	http.Handle("/", static.Html().Func(FrontIndex))
+	http.Handle("/index.js", static.Js().Func(FrontApp))
+	http.Handle("/style.css", static.Css().Func(FrontStyle))
 	http.HandleFunc("/avatar", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("[AVATAR]")
 		w.Header().Set("Content-Type", "image/webp")
@@ -63,8 +68,12 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 	if jwt == "" {
 		return
 	}
-	url := strings.TrimSuffix(r.URL.Query().Get("u"), "/")
-	http.Redirect(w, r, url+"/login?jwt="+jwt+"&r="+r.URL.Query().Get("r"), http.StatusTemporaryRedirect)
+	u := strings.TrimSuffix(r.URL.Query().Get("u"), "/")
+	qr := ""
+	if gr := r.URL.Query().Get("r"); gr != "" {
+		qr = "&r=" + url.QueryEscape(gr)
+	}
+	http.Redirect(w, r, u+"/login?jwt="+jwt+qr, http.StatusTemporaryRedirect)
 }
 
 // Get parmas from URL Query and generate a JWT.

@@ -1,0 +1,97 @@
+/** Copyright (c) 2020, Arveto Ink. All rights reserved.
+* Use of this source code is governed by a BSD
+* license that can be found in the LICENSE file. */
+:root {
+	--bg: hsla(0 0% 20%);
+	--bg-primary: hsla(0 0% 10%);
+	--bg-secondary: hsla(0 0% 15%);
+	--cline: hsla(0 0% 30%);
+	--cline-focus: dodgerblue;
+	--cline-invalid: #FB5200;
+	--w: 70ex;
+	--w-large: 100ex;
+	--l1: 0.5ex;
+	--l2: 0.1ex;
+	--sp: 2ex;
+}
+
+*[hidden] {
+	display: none !important;
+}
+
+body {
+	max-width: var(--w);
+	margin: auto;
+	padding: var(--sp);
+	font-size: large;
+	font-family: sans-serif;
+	background: var(--bg);
+	color: white;
+}
+
+footer {
+	margin-top: var(--sp);
+	border-top: solid var(--cline) var(--l1);
+	padding-top: var(--l1);
+	font-style: italic;
+}
+
+hr {
+	border: none;
+	border-bottom: solid var(--cline) var(--l1);
+}
+
+a {
+	color: dodgerblue;
+}
+
+input:not([type=checkbox]) {
+	display: block;
+	width: 100%;
+	margin: var(--l2) 0;
+	border: var(--l1) var(--cline);
+	border-style: solid none;
+	padding: 1ex;
+	font-size: inherit;
+	font-family: inherit;
+	color: inherit;
+	background-color: var(--bg-secondary);
+}
+
+button {
+	margin: var(--sp) 0;
+	border: var(--l1) var(--cline) solid;
+	padding: var(--l1) var(--sp);
+	font-size: inherit;
+	font-family: inherit;
+	color: inherit;
+	background-color: var(--bg-secondary);
+}
+
+button:hover,
+input:focus,
+input:hover {
+	border-color: var(--cline-focus);
+	color: var(--cline-focus);
+	border-radius: 0;
+}
+
+button.inline {
+	margin: 0 var(--l1);
+	border: solid var(--l2) var(--cline);
+	border-radius: var(--l1);
+	padding: var(--l2) var(--l1);
+	font-size: smaller;
+}
+
+#out {
+	display: block;
+	padding: var(--sp);
+	word-break: break-all;
+	font-family: monospace;
+	background-color: var(--bg-secondary);
+}
+#out.copied {
+	border-color: green;
+	color: green;
+}
