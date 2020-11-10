@@ -64,6 +64,9 @@ a {
 .inputGroup+.inputGroup {
 	border-top: 0;
 }
+.inputGroup.checkbox {
+	grid-template-columns: auto auto 1fr;
+}
 
 .inputGroup > label {
 	color: var(--cline);

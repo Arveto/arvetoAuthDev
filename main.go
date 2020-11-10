@@ -90,7 +90,7 @@ func getJWT(w http.ResponseWriter, r *http.Request) string {
 		ID:     get("id"),
 		Pseudo: get("pseudo"),
 		Email:  get("email"),
-		Bot:    get("bot") == "true",
+		Bot:    get("bot") == "on",
 	}
 	teams := strings.Split(get("teams"), ",")
 	u.Teams = make(auth.Teams, len(teams))

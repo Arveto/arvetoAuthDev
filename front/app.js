@@ -31,6 +31,7 @@ const stdsubjets = {
 		level: 'standard',
 		bot: true,
 	},
+	'custom': {}
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -54,7 +55,20 @@ document.addEventListener('DOMContentLoaded', () => {
 	let updateRedirect = [];
 	let updateTeams = [];
 
-	document.querySelectorAll('#list a').forEach(a => {
+	const custom = document.getElementById('custom');
+	document.getElementById('customGen').addEventListener('click',
+		() => generate(stdsubjets.custom));
+	['id', 'pseudo', 'email', 'level', 'bot'].map(id => document.getElementById(id))
+		.forEach(input => {
+			stdsubjets.custom[input.id] = input.value;
+			input.addEventListener('input', () => {
+				stdsubjets.custom[input.id] = input.value;
+				custom.href = '/redirect?' + new URLSearchParams(stdsubjets.custom);
+			});
+		});
+
+	[custom, ...document.querySelectorAll('#list a')]
+	.forEach(a => {
 		a.addEventListener('click', event => {
 			event.preventDefault();
 			window.open(a.href).focus();

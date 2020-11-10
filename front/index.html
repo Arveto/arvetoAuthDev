@@ -13,7 +13,7 @@
 	<p>Ce site fournis des JWT de faux utilisateurs. <strong>À
 			utiliser uniquement pour le dévelopement&#8239;!</strong></p>
 
-	<h2>Général</h2>
+	<h2>Caractéristiques générales</h2>
 	<form>
 		<div class="inputGroup">
 			<label for=u>URL de l'application</label><input type=url id=u value="http://localhost:8000">
@@ -29,7 +29,37 @@
 		</div>
 	</form>
 
+	<h2>Jeton spécifique</h2>
+	<form>
+		<div class="inputGroup">
+			<label for=id>ID</label><input type=text id=id>
+		</div>
+		<div class="inputGroup">
+			<label for=pseudo>Pseudo</label><input type=text id=pseudo>
+		</div>
+		<div class="inputGroup">
+			<label for=email>Email</label><input type=email id=email>
+		</div>
+		<div class="inputGroup">
+			<label for=level>Level</label>
+			<select id=level>
+				<option value="candidate">Candidate</option>
+				<option value="visitor">Visitor</option>
+				<option value="standard">Standard</option>
+				<option value="administrator">Administrator</option>
+			</select>
+		</div>
+		<div class="inputGroup checkbox">
+			<label for=bot>Bot</label>
+			<input type=checkbox id=bot>
+		</div>
 
+		<br>
+		<button type=button class="inline" value="true" id=customGen>GENERATE</button>
+		<a id=custom>Lien</a>
+	</form>
+
+	<h2>Jetons préenregistrés</h2>
 	<ul id=list>
 		<li><button type=button class="inline" id=tomas>GENERATE</button><a id=tomas>Tomas (Visiteur)</a>
 		<li><button type=button class="inline" id=zech>GENERATE</button><a id=zech>Zech (Standard)</a>
