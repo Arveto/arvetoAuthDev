@@ -9,34 +9,27 @@ package main
 
 import (
 	"flag"
-	"github.com/Arveto/arvetoAuth/pkg/public2"
+	"github.com/Arveto/auth-go"
+	"github.com/HuguesGuilleus/static.v3"
 	"log"
 	"net/http"
 	"strings"
 )
 
-var (
-	provider  *public.Provider
-	serverURL string
-)
+var provider *auth.Provider
 
 func main() {
 	a := flag.String("a", "localhost:8000", "The listen address.")
 	k := flag.String("k", "key.pem", "The private key file")
-	flag.StringVar(&serverURL, "s", "http://localhost:8000", "The url of this server")
 	flag.Parse()
-	serverURL = strings.TrimSuffix(serverURL, "/")
 
-	if p, err := public.NewProvider(*k); err != nil {
+	var err error
+	provider, err = auth.NewProvier(*k)
+	if err != nil {
 		log.Fatal(err)
-	} else {
-		provider = p
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/html")
-		w.Write(FrontIndex())
-	})
+	http.Handle("/", static.Html().Func(FrontIndex))
 	http.HandleFunc("/avatar", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("[AVATAR]")
 		w.Header().Set("Content-Type", "image/webp")
@@ -46,11 +39,11 @@ func main() {
 			w.Write(FrontAvatar())
 		}
 	})
-	http.HandleFunc("/publickey", provider.PubHTTP)
+	http.HandleFunc("/publickey", provider.ServerKey)
 	http.HandleFunc("/redirect", redirect)
 	http.HandleFunc("/generate", generate)
 
-	log.Println("[LISTEN]", *a, "for the server", serverURL)
+	log.Println("[LISTEN]", *a)
 	log.Fatal(http.ListenAndServe(*a, nil))
 }
 
@@ -59,6 +52,7 @@ func generate(w http.ResponseWriter, r *http.Request) {
 	if jwt == "" {
 		return
 	}
+	w.Header().Set("Content-Type", "application/jwt")
 	w.Write([]byte(jwt))
 	w.Write([]byte("\r\n"))
 }
@@ -75,18 +69,26 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 
 // Get parmas from URL Query and generate a JWT.
 func getJWT(w http.ResponseWriter, r *http.Request) string {
+	query := r.URL.Query()
 	get := r.URL.Query().Get
 
-	u := public.UserInfo{
+	u := auth.User{
 		ID:     get("id"),
 		Pseudo: get("pseudo"),
 		Email:  get("email"),
-		Avatar: serverURL + "/avatar",
+		Bot:    get("bot") == "true",
 	}
+	teams := query["teams"]
+	u.Teams = make(auth.Teams, len(teams))
+	for _, k := range teams {
+		u.Teams[k] = true
+	}
+
 	if u.ID == "" || u.Pseudo == "" || u.Email == "" {
-		http.Error(w, "paras id, pseudo or email are empty", http.StatusBadRequest)
+		http.Error(w, "Query id, pseudo or email are empty", http.StatusBadRequest)
 		return ""
 	}
+
 	if err := u.Level.UnmarshalText([]byte(get("level"))); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return ""
@@ -98,7 +100,7 @@ func getJWT(w http.ResponseWriter, r *http.Request) string {
 		return ""
 	}
 
-	jwt, err := provider.CreateJWT(&u, app)
+	jwt, err := provider.JWT(app, &u)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return ""
