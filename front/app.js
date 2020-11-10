@@ -114,6 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	updator(updateAppID, 'app');
 	updator(updateAppURL, 'u');
 	updator(updateRedirect, 'r');
+
+	document.querySelectorAll('input').forEach(input => {
+		input.addEventListener('input', hideJWTOut);
+	});
 }, {
 	once: true,
 });
@@ -157,4 +161,8 @@ async function generate(query) {
 		out.classList.add('copied');
 		setTimeout(() => out.classList.remove('copied'), 500);
 	};
+}
+
+function hideJWTOut() {
+	document.getElementById('out').hidden = true;
 }
