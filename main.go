@@ -84,7 +84,6 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 
 // Get parmas from URL Query and generate a JWT.
 func getJWT(w http.ResponseWriter, r *http.Request) string {
-	query := r.URL.Query()
 	get := r.URL.Query().Get
 
 	u := auth.User{
@@ -93,7 +92,7 @@ func getJWT(w http.ResponseWriter, r *http.Request) string {
 		Email:  get("email"),
 		Bot:    get("bot") == "true",
 	}
-	teams := query["teams"]
+	teams := strings.Split(get("teams"), ",")
 	u.Teams = make(auth.Teams, len(teams))
 	for _, k := range teams {
 		u.Teams[k] = true
