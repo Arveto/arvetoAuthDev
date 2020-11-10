@@ -68,12 +68,18 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 	if jwt == "" {
 		return
 	}
-	u := strings.TrimSuffix(r.URL.Query().Get("u"), "/")
-	qr := ""
-	if gr := r.URL.Query().Get("r"); gr != "" {
-		qr = "&r=" + url.QueryEscape(gr)
+
+	u, err := url.ParseRequestURI(r.URL.Query().Get("u"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
-	http.Redirect(w, r, u+"/login?jwt="+jwt+qr, http.StatusTemporaryRedirect)
+	u.Path = "/login"
+	u.RawQuery = (url.Values{
+		"jwt": []string{jwt},
+		"r":   []string{r.URL.Query().Get("r")},
+	}).Encode()
+	http.Redirect(w, r, u.String(), http.StatusTemporaryRedirect)
 }
 
 // Get parmas from URL Query and generate a JWT.
